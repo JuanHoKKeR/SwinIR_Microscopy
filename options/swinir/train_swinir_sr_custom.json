@@ -1,0 +1,69 @@
+{
+  "task": "swinir_sr_custom_x2",
+  "model": "plain",
+  "gpu_ids": [0],
+  "dist": false,
+  "scale": 2,
+  "n_channels": 3,
+  "path": {
+    "root": "superresolution",
+    "pretrained_netG": null,
+    "pretrained_netE": null
+  },
+  "datasets": {
+    "train": {
+      "name": "train_dataset",
+      "dataset_type": "custom_sr",
+      "dataroot_H": "trainset/train_hr.txt",
+      "dataroot_L": "trainset/train_lr.txt",
+      "H_size": 256,
+      "dataloader_shuffle": true,
+      "dataloader_num_workers": 4,
+      "dataloader_batch_size": 8
+    },
+    "test": {
+      "name": "test_dataset",
+      "dataset_type": "custom_sr",
+      "dataroot_H": "testset/test_hr.txt",
+      "dataroot_L": "testset/test_lr.txt"
+    }
+  },
+  "netG": {
+    "net_type": "swinir",
+    "upscale": 2,
+    "in_chans": 3,
+    "img_size": 128,
+    "window_size": 8,
+    "img_range": 1.0,
+    "depths": [6, 6, 6, 6, 6, 6],
+    "embed_dim": 180,
+    "num_heads": [6, 6, 6, 6, 6, 6],
+    "mlp_ratio": 2,
+    "upsampler": "pixelshuffle",
+    "resi_connection": "1conv",
+    "init_type": "default"
+  },
+  "train": {
+    "G_lossfn_type": "l1",
+    "G_lossfn_weight": 1.0,
+    "E_decay": 0.999,
+    "G_optimizer_type": "adam",
+    "G_optimizer_lr": 2e-4,
+    "G_optimizer_wd": 0,
+    "G_optimizer_clipgrad": null,
+    "G_optimizer_reuse": true,
+    "G_scheduler_type": "MultiStepLR",
+    "G_scheduler_milestones": [250000, 400000, 450000, 475000, 500000],
+    "G_scheduler_gamma": 0.5,
+    "G_regularizer_orthstep": null,
+    "G_regularizer_clipstep": null,
+    "G_param_strict": true,
+    "E_param_strict": true,
+    "checkpoint_test": 5000,
+    "checkpoint_save": 5000,
+    "checkpoint_print": 200,
+    "use_wandb": true,
+    "wandb_project": "swinir_custom_sr",
+    "wandb_run_name": "swinir_x2_custom"
+  }
+} 

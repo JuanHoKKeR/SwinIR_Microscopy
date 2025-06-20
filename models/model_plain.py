@@ -11,6 +11,9 @@ from models.loss_ssim import SSIMLoss
 
 from utils.utils_model import test_mode
 from utils.utils_regularizers import regularizer_orth, regularizer_clip
+from utils.utils_metrics import MetricsCalculator
+
+import wandb
 
 
 class ModelPlain(ModelBase):
@@ -25,6 +28,30 @@ class ModelPlain(ModelBase):
         self.netG = self.model_to_device(self.netG)
         if self.opt_train['E_decay'] > 0:
             self.netE = define_G(opt).to(self.device).eval()
+
+        # ------------------------------------
+        # initialize Weights & Biases
+        # ------------------------------------
+        self.use_wandb = self.opt_train.get('use_wandb', False)
+        if self.use_wandb:
+            wandb.init(
+                project=self.opt_train.get('wandb_project', 'swinir_custom_sr'),
+                name=self.opt_train.get('wandb_run_name', 'swinir_training'),
+                config={
+                    'model': 'SwinIR',
+                    'scale': opt.get('scale', 2),
+                    'n_channels': opt.get('n_channels', 3),
+                    'learning_rate': self.opt_train.get('G_optimizer_lr', 2e-4),
+                    'batch_size': opt['datasets']['train'].get('dataloader_batch_size', 8),
+                    'loss_type': self.opt_train.get('G_lossfn_type', 'l1'),
+                    'epochs': 1000000
+                }
+            )
+
+        # ------------------------------------
+        # initialize metrics calculator
+        # ------------------------------------
+        self.metrics_calculator = MetricsCalculator(device=self.device)
 
     """
     # ----------------------------------------
@@ -189,8 +216,29 @@ class ModelPlain(ModelBase):
         # self.log_dict['G_loss'] = G_loss.item()/self.E.size()[0]  # if `reduction='sum'`
         self.log_dict['G_loss'] = G_loss.item()
 
+        # ------------------------------------
+        # calculate additional metrics for training
+        # ------------------------------------
+        with torch.no_grad():
+            metrics = self.metrics_calculator.calculate_all_metrics(self.E, self.H)
+            self.log_dict.update(metrics)
+
         if self.opt_train['E_decay'] > 0:
             self.update_E(self.opt_train['E_decay'])
+
+        # ------------------------------------
+        # log to wandb
+        # ------------------------------------
+        if self.use_wandb:
+            wandb.log({
+                'train/loss': self.log_dict['G_loss'],
+                'train/psnr': self.log_dict['PSNR'],
+                'train/ssim': self.log_dict['SSIM'],
+                'train/ms_ssim': self.log_dict['MS-SSIM'],
+                'train/mse': self.log_dict['MSE'],
+                'train/learning_rate': self.current_learning_rate(),
+                'train/step': current_step
+            })
 
     # ----------------------------------------
     # test / inference

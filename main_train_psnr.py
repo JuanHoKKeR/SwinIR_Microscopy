@@ -12,9 +12,12 @@ from utils import utils_logger
 from utils import utils_image as util
 from utils import utils_option as option
 from utils.utils_dist import get_dist_info, init_dist
+from utils.utils_metrics import MetricsCalculator
 
 from data.select_dataset import define_Dataset
 from models.select_model import define_Model
+
+import wandb
 
 
 '''
@@ -156,6 +159,11 @@ def main(json_path='options/train_msrresnet_psnr.json'):
         logger.info(model.info_network())
         logger.info(model.info_params())
 
+    # ----------------------------------------
+    # initialize metrics calculator for validation
+    # ----------------------------------------
+    metrics_calculator = MetricsCalculator(device=model.device)
+
     '''
     # ----------------------------------------
     # Step--4 (main training)
@@ -208,6 +216,9 @@ def main(json_path='options/train_msrresnet_psnr.json'):
             if current_step % opt['train']['checkpoint_test'] == 0 and opt['rank'] == 0:
 
                 avg_psnr = 0.0
+                avg_ssim = 0.0
+                avg_ms_ssim = 0.0
+                avg_mse = 0.0
                 idx = 0
 
                 for test_data in test_loader:
@@ -232,18 +243,46 @@ def main(json_path='options/train_msrresnet_psnr.json'):
                     util.imsave(E_img, save_img_path)
 
                     # -----------------------
-                    # calculate PSNR
+                    # calculate metrics
                     # -----------------------
                     current_psnr = util.calculate_psnr(E_img, H_img, border=border)
+                    
+                    # Convert to tensor for metrics calculation
+                    E_tensor = util.uint2tensor4(E_img).to(model.device)
+                    H_tensor = util.uint2tensor4(H_img).to(model.device)
+                    
+                    # Calculate additional metrics
+                    test_metrics = metrics_calculator.calculate_all_metrics(E_tensor, H_tensor)
+                    current_ssim = test_metrics['SSIM']
+                    current_ms_ssim = test_metrics['MS-SSIM']
+                    current_mse = test_metrics['MSE']
 
-                    logger.info('{:->4d}--> {:>10s} | {:<4.2f}dB'.format(idx, image_name_ext, current_psnr))
+                    logger.info('{:->4d}--> {:>10s} | PSNR: {:<4.2f}dB | SSIM: {:<4.4f} | MS-SSIM: {:<4.4f} | MSE: {:<4.4f}'.format(
+                        idx, image_name_ext, current_psnr, current_ssim, current_ms_ssim, current_mse))
 
                     avg_psnr += current_psnr
+                    avg_ssim += current_ssim
+                    avg_ms_ssim += current_ms_ssim
+                    avg_mse += current_mse
 
                 avg_psnr = avg_psnr / idx
+                avg_ssim = avg_ssim / idx
+                avg_ms_ssim = avg_ms_ssim / idx
+                avg_mse = avg_mse / idx
 
                 # testing log
-                logger.info('<epoch:{:3d}, iter:{:8,d}, Average PSNR : {:<.2f}dB\n'.format(epoch, current_step, avg_psnr))
+                logger.info('<epoch:{:3d}, iter:{:8,d}, Average PSNR: {:<.2f}dB, SSIM: {:<.4f}, MS-SSIM: {:<.4f}, MSE: {:<.4f}\n'.format(
+                    epoch, current_step, avg_psnr, avg_ssim, avg_ms_ssim, avg_mse))
+
+                # Log validation metrics to wandb
+                if model.use_wandb:
+                    wandb.log({
+                        'val/psnr': avg_psnr,
+                        'val/ssim': avg_ssim,
+                        'val/ms_ssim': avg_ms_ssim,
+                        'val/mse': avg_mse,
+                        'val/step': current_step
+                    })
 
 if __name__ == '__main__':
     main()
