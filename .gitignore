@@ -5,6 +5,8 @@ trainsets/*
 !trainsets/.gitkeep
 testsets/*
 !testsets/.gitkeep
+dataset/*
+!dataset/.gitkeep
 
 # Archivos de entrenamiento generados
 superresolution/

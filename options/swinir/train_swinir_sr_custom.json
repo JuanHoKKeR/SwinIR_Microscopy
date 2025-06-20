@@ -1,5 +1,5 @@
 {
-  "task": "swinir_sr_custom_x2",
+  "task": "swinir_sr_Microscopy_x2",
   "model": "plain",
   "gpu_ids": [0],
   "dist": false,
@@ -14,8 +14,8 @@
     "train": {
       "name": "train_dataset",
       "dataset_type": "custom_sr",
-      "dataroot_H": "trainset/train_hr.txt",
-      "dataroot_L": "trainset/train_lr.txt",
+      "dataroot_H": "trainsets/128to256/train_hr_meta.txt",
+      "dataroot_L": "trainsets/128to256/train_lr_meta.txt",
       "H_size": 256,
       "dataloader_shuffle": true,
       "dataloader_num_workers": 4,
@@ -24,8 +24,8 @@
     "test": {
       "name": "test_dataset",
       "dataset_type": "custom_sr",
-      "dataroot_H": "testset/test_hr.txt",
-      "dataroot_L": "testset/test_lr.txt"
+      "dataroot_H": "trainsets/128to256/test_hr_meta.txt",
+      "dataroot_L": "trainsets/128to256/test_lr_meta.txt"
     }
   },
   "netG": {
@@ -63,7 +63,7 @@
     "checkpoint_save": 5000,
     "checkpoint_print": 200,
     "use_wandb": true,
-    "wandb_project": "swinir_custom_sr",
-    "wandb_run_name": "swinir_x2_custom"
+    "wandb_project": "SwinIR Microscopy",
+    "wandb_run_name": "swinir_microscopy_128to256_x2"
   }
 } 
