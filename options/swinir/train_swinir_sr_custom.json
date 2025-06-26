@@ -1,5 +1,5 @@
 {
-  "task": "swinir_sr_Microscopy_x2",
+  "task": "SwinIR_SR_64to128_v0",
   "model": "plain",
   "gpu_ids": [0],
   "dist": false,
@@ -14,25 +14,25 @@
     "train": {
       "name": "train_dataset",
       "dataset_type": "custom_sr",
-      "dataroot_H": "trainsets/128to256/train_hr_meta.txt",
-      "dataroot_L": "trainsets/128to256/train_lr_meta.txt",
-      "H_size": 256,
+      "dataroot_H": "trainsets/64to128/train_hr_meta.txt",
+      "dataroot_L": "trainsets/64to128/train_lr_meta.txt",
+      "H_size": 128,
       "dataloader_shuffle": true,
-      "dataloader_num_workers": 4,
+      "dataloader_num_workers": 8,
       "dataloader_batch_size": 8
     },
     "test": {
       "name": "test_dataset",
       "dataset_type": "custom_sr",
-      "dataroot_H": "trainsets/128to256/test_hr_meta.txt",
-      "dataroot_L": "trainsets/128to256/test_lr_meta.txt"
+      "dataroot_H": "trainsets/64to128/test_hr_meta.txt",
+      "dataroot_L": "trainsets/64to128/test_lr_meta.txt"
     }
   },
   "netG": {
     "net_type": "swinir",
     "upscale": 2,
     "in_chans": 3,
-    "img_size": 128,
+    "img_size": 64,
     "window_size": 8,
     "img_range": 1.0,
     "depths": [6, 6, 6, 6, 6, 6],

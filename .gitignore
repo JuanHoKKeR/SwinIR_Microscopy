@@ -13,6 +13,9 @@ superresolution/
 denoising/
 dejpeg/
 
+results/*
+wandb/*
+
 # Logs y archivos temporales
 *.log
 *.tmp

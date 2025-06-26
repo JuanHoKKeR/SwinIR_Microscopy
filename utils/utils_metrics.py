@@ -4,8 +4,7 @@ import torch.nn.functional as F
 import numpy as np
 from skimage.metrics import structural_similarity as ssim
 from pytorch_msssim import ssim as torch_ssim, ms_ssim
-import cv2
-import os
+
 
 class MetricsCalculator:
     """"Calculadora de métricas para super-resolución"""
@@ -24,7 +23,7 @@ class MetricsCalculator:
         """Calcula MSE entre dos imágenes."""
         return torch.mean((img1 - img2) ** 2)
     
-    def calculate_ssim_torch(self, img1, img2, window_size=11):
+    def calculate_ssim_torch(self, img1, img2):
         """Calcula SSIM usando PyTorch."""
         img1 = torch.clamp(img1, 0, 1)
         img2 = torch.clamp(img2, 0, 1)
@@ -34,9 +33,9 @@ class MetricsCalculator:
         if len(img2.shape) == 3:
             img2 = img2.unsqueeze(0)
 
-        return torch_ssim(img1, img2, window_size=window_size, data_range=1.0)
+        return torch_ssim(img1, img2, data_range=1.0)
     
-    def calculate_msssim_torch(self, img1, img2, window_size=11):
+    def calculate_msssim_torch(self, img1, img2):
         """Calcula MS-SSIM usando PyTorch."""
         img1 = torch.clamp(img1, 0, 1)
         img2 = torch.clamp(img2, 0, 1)
@@ -46,7 +45,11 @@ class MetricsCalculator:
         if len(img2.shape) == 3:
             img2 = img2.unsqueeze(0)
 
-        return ms_ssim(img1, img2, window_size=window_size, data_range=1.0)
+        h, w = img1.shape[2], img1.shape[3]
+        if h < 160 or w < 160:
+            return torch_ssim(img1, img2, data_range=1.0)
+
+        return ms_ssim(img1, img2, data_range=1.0)
     
     def calculate_ssim_skimage(self, img1, img2):
         """Calcula SSIM usando skimage."""
