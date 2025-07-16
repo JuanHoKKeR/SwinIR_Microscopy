@@ -44,7 +44,10 @@ class ModelPlain(ModelBase):
                     'learning_rate': self.opt_train.get('G_optimizer_lr', 2e-4),
                     'batch_size': opt['datasets']['train'].get('dataloader_batch_size', 8),
                     'loss_type': self.opt_train.get('G_lossfn_type', 'l1'),
-                    'epochs': 1000000
+                    'epochs': 1000000,
+                    'depths': opt.get('depths', [6, 6, 6, 6]),
+                    'embed_dim': opt.get('embed_dim', 180),
+                    'num_heads': opt.get('num_heads', [6, 6, 6, 6])
                 }
             )
 

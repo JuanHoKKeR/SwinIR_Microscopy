@@ -256,9 +256,18 @@ def main(json_path='options/train_msrresnet_psnr.json'):
 
                 # Lista para almacenar imagenes para wandb
                 wandb_images = []
+                
+                # Limitar número de imágenes para testing (configurable)
+                max_test_images = opt.get('test_limit', 1000)  # Por defecto 100 imágenes
+                logger.info(f'Testing on {max_test_images} images out of {len(test_loader)} total images')
 
                 for test_data in test_loader:
                     idx += 1
+                    
+                    # Romper el loop si alcanzamos el límite
+                    if idx > max_test_images:
+                        break
+                        
                     image_name_ext = os.path.basename(test_data['L_path'][0])
                     img_name, ext = os.path.splitext(image_name_ext)
 
@@ -297,7 +306,8 @@ def main(json_path='options/train_msrresnet_psnr.json'):
 
                     display_name = img_name[:15] + "..." if len(img_name) > 15 else img_name
 
-                    if idx % 5000 == 0 or idx <= 5:
+                    # Mostrar progreso cada 50 imágenes en lugar de 5000
+                    if idx % 100 == 0 or idx <= 5:
                         logger.info('{:->4d}--> {:>15s} | PSNR: {:<4.2f}dB | SSIM: {:<4.4f} | MS-SSIM: {:<4.4f} | MSE: {:<4.4f}'.format(
                             idx, display_name, current_psnr, current_ssim, current_ms_ssim, current_mse))
 

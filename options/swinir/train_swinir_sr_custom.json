@@ -1,9 +1,9 @@
 {
-  "task": "SwinIR_SR_64to128_v0",
+  "task": "SwinIR_SR_64to256",
   "model": "plain",
   "gpu_ids": [0],
   "dist": false,
-  "scale": 2,
+  "scale": 4,
   "n_channels": 3,
   "path": {
     "root": "superresolution",
@@ -14,23 +14,23 @@
     "train": {
       "name": "train_dataset",
       "dataset_type": "custom_sr",
-      "dataroot_H": "trainsets/64to128/train_hr_meta.txt",
-      "dataroot_L": "trainsets/64to128/train_lr_meta.txt",
-      "H_size": 128,
+      "dataroot_H": "trainsets/64to256/train_hr_meta.txt",
+      "dataroot_L": "trainsets/64to256/train_lr_meta.txt",
+      "H_size": 256,
       "dataloader_shuffle": true,
       "dataloader_num_workers": 8,
-      "dataloader_batch_size": 8
+      "dataloader_batch_size": 1
     },
     "test": {
       "name": "test_dataset",
       "dataset_type": "custom_sr",
-      "dataroot_H": "trainsets/64to128/test_hr_meta.txt",
-      "dataroot_L": "trainsets/64to128/test_lr_meta.txt"
+      "dataroot_H": "trainsets/64to256/test_hr_meta.txt",
+      "dataroot_L": "trainsets/64to256/test_lr_meta.txt"
     }
   },
   "netG": {
     "net_type": "swinir",
-    "upscale": 2,
+    "upscale": 4,
     "in_chans": 3,
     "img_size": 64,
     "window_size": 8,
@@ -53,7 +53,7 @@
     "G_optimizer_clipgrad": null,
     "G_optimizer_reuse": true,
     "G_scheduler_type": "MultiStepLR",
-    "G_scheduler_milestones": [250000, 400000, 450000, 475000, 500000],
+    "G_scheduler_milestones": [150000, 300000, 350000, 375000, 400000],
     "G_scheduler_gamma": 0.5,
     "G_regularizer_orthstep": null,
     "G_regularizer_clipstep": null,
@@ -61,9 +61,9 @@
     "E_param_strict": true,
     "checkpoint_test": 5000,
     "checkpoint_save": 5000,
-    "checkpoint_print": 200,
+    "checkpoint_print": 500,
     "use_wandb": true,
-    "wandb_project": "SwinIR Microscopy",
-    "wandb_run_name": "swinir_microscopy_128to256_x2"
+    "wandb_project": "SwinIR Microscopy x4",
+    "wandb_run_name": "swinir_microscopy_64to256_x4"
   }
 } 
