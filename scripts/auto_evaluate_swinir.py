@@ -130,7 +130,7 @@ class SwinIRAutoEvaluator:
         self.logger.info("✅ Todos los archivos necesarios están disponibles")
         return True
     
-    def run_command(self, command, description, env_vars=None):
+    def run_command(self, command, description, env_vars=None, show_progress=True):
         """
         Ejecuta un comando y maneja errores
         
@@ -138,6 +138,7 @@ class SwinIRAutoEvaluator:
             command: Lista con el comando a ejecutar
             description: Descripción del comando para logging
             env_vars: Variables de entorno adicionales
+            show_progress: Si mostrar la salida en tiempo real
             
         Returns:
             Tuple (success, duration, output)
@@ -154,24 +155,53 @@ class SwinIRAutoEvaluator:
         start_time = time.time()
         
         try:
-            # Ejecutar comando
-            result = subprocess.run(
-                command,
-                capture_output=True,
-                text=True,
-                env=env,
-                timeout=3600  # Timeout de 1 hora por comando
-            )
+            if show_progress:
+                # Mostrar salida en tiempo real
+                self.logger.info(f"📺 Mostrando progreso en tiempo real...")
+                
+                process = subprocess.Popen(
+                    command,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.STDOUT,
+                    text=True,
+                    env=env,
+                    bufsize=1,
+                    universal_newlines=True
+                )
+                
+                output_lines = []
+                for line in iter(process.stdout.readline, ''):
+                    # Mostrar línea en tiempo real
+                    print(line.rstrip())
+                    output_lines.append(line)
+                
+                process.wait()
+                result_code = process.returncode
+                output = ''.join(output_lines)
+                
+            else:
+                # Modo silencioso (capturar todo)
+                result = subprocess.run(
+                    command,
+                    capture_output=True,
+                    text=True,
+                    env=env,
+                    timeout=3600
+                )
+                result_code = result.returncode
+                output = result.stdout if result.returncode == 0 else result.stderr
             
             duration = time.time() - start_time
             
-            if result.returncode == 0:
+            if result_code == 0:
                 self.logger.info(f"✅ {description} completado en {duration:.1f}s")
-                return True, duration, result.stdout
+                return True, duration, output
             else:
                 self.logger.error(f"❌ {description} falló:")
-                self.logger.error(f"   Error: {result.stderr}")
-                return False, duration, result.stderr
+                self.logger.error(f"   Error código: {result_code}")
+                if not show_progress:
+                    self.logger.error(f"   Salida: {output}")
+                return False, duration, output
                 
         except subprocess.TimeoutExpired:
             duration = time.time() - start_time
@@ -203,7 +233,8 @@ class SwinIRAutoEvaluator:
         
         return self.run_command(
             command, 
-            f"Evaluación de métricas - {config['name']}"
+            f"Evaluación de métricas - {config['name']}",
+            show_progress=True  # Mostrar progreso en tiempo real
         )
     
     def benchmark_timing_gpu(self, config):
@@ -225,7 +256,8 @@ class SwinIRAutoEvaluator:
         
         return self.run_command(
             command,
-            f"Benchmark timing GPU - {config['name']}"
+            f"Benchmark timing GPU - {config['name']}",
+            show_progress=True  # Mostrar progreso en tiempo real
         )
     
     def benchmark_timing_cpu(self, config):
@@ -251,7 +283,8 @@ class SwinIRAutoEvaluator:
         return self.run_command(
             command,
             f"Benchmark timing CPU - {config['name']}",
-            env_vars
+            env_vars,
+            show_progress=True  # Mostrar progreso en tiempo real
         )
     
     def evaluate_single_model(self, config):
