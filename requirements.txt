@@ -8,3 +8,8 @@ lmdb
 requests
 timm
 einops
+tensorflow
+torch 
+pandas
+numpy
+tqdm 

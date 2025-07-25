@@ -15,6 +15,9 @@ dejpeg/
 
 results/*
 wandb/*
+evaluation_results/*
+
+model-kimianet/KimiaNetKerasWeights.h5
 
 # Logs y archivos temporales
 *.log
