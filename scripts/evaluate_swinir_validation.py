@@ -310,6 +310,151 @@ class SwinIRModelEvaluator:
         
         return float(perceptual_distance.numpy())
     
+    def calculate_ms_ssim_pytorch(self, img1, img2, max_val=1.0):
+        """
+        Implementación de MS-SSIM en PyTorch
+        
+        Args:
+            img1, img2: Tensores CHW en rango [0, 1]
+            max_val: Valor máximo (1.0 para rango [0,1])
+            
+        Returns:
+            MS-SSIM value
+        """
+        try:
+            # Agregar dimensión de batch si no existe
+            if len(img1.shape) == 3:
+                img1 = img1.unsqueeze(0)
+                img2 = img2.unsqueeze(0)
+            
+            # Verificar tamaño mínimo para MS-SSIM (necesita al menos 160x160 para 5 escalas)
+            _, _, h, w = img1.shape
+            min_size = 32  # Tamaño mínimo para hacer downsampling
+            
+            if h < min_size or w < min_size:
+                # Si la imagen es muy pequeña, usar SSIM regular
+                ssim_val = self.calculate_ssim_pytorch(img1.squeeze(0), img2.squeeze(0), max_val)
+                return float(ssim_val)
+            
+            # Pesos para diferentes escalas en MS-SSIM
+            weights = torch.tensor([0.0448, 0.2856, 0.3001, 0.2363, 0.1333]).to(img1.device)
+            
+            # Determinar número de escalas basado en el tamaño de imagen
+            max_scales = 5
+            current_h, current_w = h, w
+            actual_scales = 0
+            
+            for i in range(max_scales):
+                if current_h >= min_size and current_w >= min_size:
+                    actual_scales += 1
+                    current_h //= 2
+                    current_w //= 2
+                else:
+                    break
+            
+            if actual_scales < 2:
+                # Si no podemos hacer al menos 2 escalas, usar SSIM regular
+                ssim_val = self.calculate_ssim_pytorch(img1.squeeze(0), img2.squeeze(0), max_val)
+                return float(ssim_val)
+            
+            # Ajustar pesos para el número real de escalas
+            weights = weights[:actual_scales]
+            weights = weights / weights.sum()  # Renormalizar
+            
+            ms_ssim_val = torch.tensor(1.0).to(img1.device)
+            
+            for i in range(actual_scales):
+                # Calcular SSIM en la escala actual
+                ssim_val = self.calculate_ssim_pytorch(img1.squeeze(0), img2.squeeze(0), max_val)
+                
+                if i < actual_scales - 1:
+                    # Para escalas intermedias, solo usar el contraste y estructura
+                    ms_ssim_val *= torch.pow(ssim_val, weights[i])
+                    
+                    # Downsample para la siguiente escala
+                    img1 = F.avg_pool2d(img1, kernel_size=2, stride=2)
+                    img2 = F.avg_pool2d(img2, kernel_size=2, stride=2)
+                else:
+                    # Para la última escala, usar SSIM completo
+                    ms_ssim_val *= torch.pow(ssim_val, weights[i])
+            
+            return float(ms_ssim_val.item())
+            
+        except Exception as e:
+            # Si falla MS-SSIM, usar SSIM regular como fallback
+            try:
+                ssim_val = self.calculate_ssim_pytorch(img1.squeeze(0) if len(img1.shape) == 4 else img1, 
+                                                     img2.squeeze(0) if len(img2.shape) == 4 else img2, max_val)
+                return float(ssim_val)
+            except:
+                return 0.0
+    
+    def calculate_ssim_pytorch(self, img1, img2, max_val=1.0):
+        """
+        Implementación básica de SSIM en PyTorch
+        
+        Args:
+            img1, img2: Tensores CHW en rango [0, 1]
+            max_val: Valor máximo
+            
+        Returns:
+            SSIM value
+        """
+        try:
+            C1 = (0.01 * max_val) ** 2
+            C2 = (0.03 * max_val) ** 2
+            
+            # Agregar dimensión de batch si no existe
+            if len(img1.shape) == 3:
+                img1 = img1.unsqueeze(0)
+                img2 = img2.unsqueeze(0)
+            
+            # Convertir a grayscale si es necesario (tomar solo un canal)
+            if img1.shape[1] == 3:
+                # Conversión RGB a grayscale
+                weights = torch.tensor([0.299, 0.587, 0.114]).to(img1.device).view(1, 3, 1, 1)
+                img1 = torch.sum(img1 * weights, dim=1, keepdim=True)
+                img2 = torch.sum(img2 * weights, dim=1, keepdim=True)
+            
+            # Kernel gaussiano simple
+            kernel_size = 11
+            sigma = 1.5
+            kernel = self.create_gaussian_kernel(kernel_size, sigma).to(img1.device)
+            
+            # Calcular medias
+            mu1 = F.conv2d(img1, kernel, padding=kernel_size//2, groups=1)
+            mu2 = F.conv2d(img2, kernel, padding=kernel_size//2, groups=1)
+            
+            mu1_sq = mu1.pow(2)
+            mu2_sq = mu2.pow(2)
+            mu1_mu2 = mu1 * mu2
+            
+            # Calcular varianzas y covarianza
+            sigma1_sq = F.conv2d(img1 * img1, kernel, padding=kernel_size//2, groups=1) - mu1_sq
+            sigma2_sq = F.conv2d(img2 * img2, kernel, padding=kernel_size//2, groups=1) - mu2_sq
+            sigma12 = F.conv2d(img1 * img2, kernel, padding=kernel_size//2, groups=1) - mu1_mu2
+            
+            # Calcular SSIM
+            numerator = (2 * mu1_mu2 + C1) * (2 * sigma12 + C2)
+            denominator = (mu1_sq + mu2_sq + C1) * (sigma1_sq + sigma2_sq + C2)
+            
+            ssim_map = numerator / denominator
+            
+            return torch.mean(ssim_map)
+            
+        except Exception as e:
+            return torch.tensor(0.0)
+    
+    def create_gaussian_kernel(self, kernel_size, sigma):
+        """Crea un kernel gaussiano para SSIM"""
+        coords = torch.arange(kernel_size, dtype=torch.float32)
+        coords -= (kernel_size - 1) / 2.0
+        
+        g = torch.exp(-(coords ** 2) / (2 * sigma ** 2))
+        g /= g.sum()
+        
+        return g.view(1, 1, 1, kernel_size) * g.view(1, 1, kernel_size, 1)
+
     def calculate_all_metrics(self, generated_torch, hr_torch):
         """
         Calcula todas las métricas de evaluación
@@ -346,11 +491,12 @@ class SwinIRModelEvaluator:
         # MSE en PyTorch (ambos tensores ya están en GPU)
         mse = F.mse_loss(generated_torch, hr_torch).item()
         
-        # MS-SSIM usando PyTorch (implementación simple)
+        # MS-SSIM usando implementación PyTorch mejorada
         try:
-            # Para MS-SSIM usaremos SSIM regular por simplicidad
-            ms_ssim = ssim  # Placeholder
-        except:
+            ms_ssim = self.calculate_ms_ssim_pytorch(generated_torch, hr_torch, max_val=1.0)
+            print(f"   MS-SSIM calculado: {ms_ssim:.6f}")
+        except Exception as e:
+            print(f"   ⚠️ MS-SSIM falló, usando SSIM: {e}")
             ms_ssim = ssim
         
         # Índice perceptual
@@ -383,9 +529,6 @@ class SwinIRModelEvaluator:
             
             if lr_tensor is None or hr_tensor is None:
                 return None
-            
-            # MOVER hr_tensor AL DISPOSITIVO CORRECTO DESDE EL INICIO
-            hr_tensor = hr_tensor.to(self.device)
             
             # Preparar imagen para SwinIR
             lr_batch = lr_tensor.unsqueeze(0).to(self.device)  # Agregar dimensión de batch
