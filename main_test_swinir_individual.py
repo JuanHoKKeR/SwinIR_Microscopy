@@ -304,7 +304,7 @@ def define_model(args):
         # Configuración para modelos más grandes (512px)
         elif args.training_patch_size == 512:
             model = net(upscale=args.scale, in_chans=3, img_size=args.training_patch_size, window_size=8,
-                        img_range=1., depths=[4, 4, 4, 4], embed_dim=60, num_heads=[4, 4, 4, 4],
+                        img_range=1., depths=[4, 4, 4], embed_dim=60, num_heads=[4, 4, 4],
                         mlp_ratio=2, upsampler='pixelshuffle', resi_connection='1conv')
         else:
             # Configuración por defecto
