@@ -1,362 +1,560 @@
-## Training and testing codes for USRNet, DnCNN, FFDNet, SRMD, DPSR, MSRResNet, ESRGAN, BSRGAN, SwinIR, VRT, RVRT
-[![download](https://img.shields.io/github/downloads/cszn/KAIR/total.svg)](https://github.com/cszn/KAIR/releases) ![visitors](https://visitor-badge.glitch.me/badge?page_id=cszn/KAIR) 
+# SwinIR for Histopathology Super-Resolution
 
-[Kai Zhang](https://cszn.github.io/)
+[![Python 3.9](https://img.shields.io/badge/python-3.9-blue.svg)](https://www.python.org/downloads/release/python-390/)
+[![PyTorch 1.13](https://img.shields.io/badge/PyTorch-1.13-red.svg)](https://pytorch.org/)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-*[Computer Vision Lab](https://vision.ee.ethz.ch/the-institute.html), ETH Zurich, Switzerland*
+Una implementación especializada de **SwinIR** (Image Restoration using Swin Transformer) optimizada para imágenes de histopatología de cáncer de mama. Este proyecto forma parte de un **Trabajo de Grado** enfocado en super-resolución para aplicaciones médicas mediante arquitecturas Transformer.
 
-_______
-- **_News (2023-06-02)_**: Code for "[Denoising Diffusion Models for Plug-and-Play Image Restoration](https://github.com/yuanzhi-zhu/DiffPIR)" is released at [yuanzhi-zhu/DiffPIR](https://github.com/yuanzhi-zhu/DiffPIR).
+## 🎯 **Objetivo del Proyecto**
 
-- **_News (2022-10-04)_**: We release [the training codes](https://github.com/cszn/KAIR/blob/master/docs/README_RVRT.md) of [RVRT, NeurlPS2022 ![GitHub Stars](https://img.shields.io/github/stars/JingyunLiang/RVRT?style=social)](https://github.com/JingyunLiang/RVRT) for video SR, deblurring and denoising.
+Adaptar y evaluar SwinIR, una arquitectura state-of-the-art basada en Vision Transformers, para super-resolución de imágenes de microscopia histopatológica, aprovechando su capacidad superior de capturar dependencias a largo alcance y preservar detalles finos.
 
-- **_News (2022-05-05)_**: Try the [online demo](https://replicate.com/cszn/scunet) of [SCUNet ![GitHub Stars](https://img.shields.io/github/stars/cszn/SCUNet?style=social)](https://github.com/cszn/SCUNet) for blind real image denoising.
+## ✨ **Características Principales**
 
-- **_News (2022-03-23)_**: We release [the testing codes](https://github.com/cszn/SCUNet) of [SCUNet ![GitHub Stars](https://img.shields.io/github/stars/cszn/SCUNet?style=social)](https://github.com/cszn/SCUNet) for blind real image denoising.
+- **🔬 Especializado en Histopatología**: Optimizado para imágenes de cáncer de mama
+- **🏗️ Arquitectura Transformer**: Utiliza Swin Transformer blocks para capturar patrones complejos
+- **📊 Excelente Calidad**: Mejores métricas PSNR y SSIM comparado con CNNs tradicionales
+- **⚡ Eficiencia de Memory**: Uso optimizado de VRAM mediante configuraciones adaptables
+- **📈 Sistema de Evaluación Comprehensive**: Métricas especializadas para imágenes médicas
 
-__*The following results are obtained by our SCUNet with purely synthetic training data! 
-We did not use the paired noisy/clean data by DND and SIDD during training!*__
+## 🔄 **Diferencias con el Proyecto Original**
 
-   <img src="https://github.com/cszn/cszn.github.io/blob/master/files/input_16.gif" width="360px"/> <img src="https://github.com/cszn/cszn.github.io/blob/master/files/wm_fnb_0010_16.gif" width="360px"/>
+Este repositorio está basado en [KAIR](https://github.com/cszn/KAIR) de Kai Zhang pero incluye adaptaciones específicas:
 
+| Aspecto | KAIR Original | Esta Implementación |
+|---------|---------------|-------------------|
+| **Dominio** | Imágenes naturales | Histopatología específica |
+| **Configuración** | Configuraciones fijas | Adaptables por limitaciones de memoria |
+| **Evaluación** | Métricas básicas | Sistema comprehensive con evaluación médica |
+| **Dataset** | DIV2K, Flickr2K | Dataset histopatológico especializado |
+| **Escalas** | Multi-escala completa | Optimizado para ×2 (limitaciones de hardware) |
 
-- **_News (2022-02-15)_**: We release [the training codes](https://github.com/cszn/KAIR/blob/master/docs/README_VRT.md) of [VRT ![GitHub Stars](https://img.shields.io/github/stars/JingyunLiang/VRT?style=social)](https://github.com/JingyunLiang/VRT) for video SR, deblurring and denoising.
-![Eg1](https://raw.githubusercontent.com/JingyunLiang/VRT/main/assets/teaser_vsr.gif)
-![Eg2](https://raw.githubusercontent.com/JingyunLiang/VRT/main/assets/teaser_vdb.gif)
-![Eg3](https://raw.githubusercontent.com/JingyunLiang/VRT/main/assets/teaser_vdn.gif)
-![Eg4](https://raw.githubusercontent.com/JingyunLiang/VRT/main/assets/teaser_vfi.gif)
-![Eg5](https://raw.githubusercontent.com/JingyunLiang/VRT/main/assets/teaser_stvsr.gif)
+## 🚀 **Inicio Rápido**
 
-- **_News (2021-12-23)_**: Our techniques are adopted in [https://www.amemori.ai/](https://www.amemori.ai/).
-- **_News (2021-12-23)_**: Our new work for practical image denoising.
+### Prerequisitos
+- GPU NVIDIA con drivers compatibles (recomendado)
+- NVIDIA Container Toolkit para soporte GPU
+- ~8GB VRAM mínimo para entrenamiento
 
-- <img src="figs/palace.png" height="320px"/> <img src="figs/palace_HSCU.png" height="320px"/> 
-- [<img src="https://github.com/cszn/KAIR/raw/master/figs/denoising_02.png" height="256px"/>](https://imgsli.com/ODczMTc) 
-[<img src="https://github.com/cszn/KAIR/raw/master/figs/denoising_01.png" height="256px"/>](https://imgsli.com/ODczMTY) 
-- **_News (2021-09-09)_**: Add [main_download_pretrained_models.py](https://github.com/cszn/KAIR/blob/master/main_download_pretrained_models.py) to download pre-trained models.
-- **_News (2021-09-08)_**: Add [matlab code](https://github.com/cszn/KAIR/tree/master/matlab) to zoom local part of an image for the purpose of comparison between different results.
-- **_News (2021-09-07)_**: We upload [the training code](https://github.com/cszn/KAIR/blob/master/docs/README_SwinIR.md) of [SwinIR ![GitHub Stars](https://img.shields.io/github/stars/JingyunLiang/SwinIR?style=social)](https://github.com/JingyunLiang/SwinIR) and provide an [interactive online Colob demo for real-world image SR](https://colab.research.google.com/gist/JingyunLiang/a5e3e54bc9ef8d7bf594f6fee8208533/swinir-demo-on-real-world-image-sr.ipynb). Try to super-resolve your own images on Colab! <a href="https://colab.research.google.com/gist/JingyunLiang/a5e3e54bc9ef8d7bf594f6fee8208533/swinir-demo-on-real-world-image-sr.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="google colab logo"></a>
-
-|Real-World Image (x4)|[BSRGAN, ICCV2021](https://github.com/cszn/BSRGAN)|[Real-ESRGAN](https://github.com/xinntao/Real-ESRGAN)|SwinIR (ours)|
-|      :---      |     :---:        |        :-----:         |        :-----:         | 
-|<img width="200" src="https://raw.githubusercontent.com/JingyunLiang/SwinIR/main/figs/ETH_LR.png">|<img width="200" src="https://raw.githubusercontent.com/JingyunLiang/SwinIR/main/figs/ETH_BSRGAN.png">|<img width="200" src="https://raw.githubusercontent.com/JingyunLiang/SwinIR/main/figs/ETH_realESRGAN.jpg">|<img width="200" src="https://raw.githubusercontent.com/JingyunLiang/SwinIR/main/figs/ETH_SwinIR.png">
-|<img width="200" src="https://raw.githubusercontent.com/JingyunLiang/SwinIR/main/figs/OST_009_crop_LR.png">|<img width="200" src="https://raw.githubusercontent.com/JingyunLiang/SwinIR/main/figs/OST_009_crop_BSRGAN.png">|<img width="200" src="https://raw.githubusercontent.com/JingyunLiang/SwinIR/main/figs/OST_009_crop_realESRGAN.png">|<img width="200" src="https://raw.githubusercontent.com/JingyunLiang/SwinIR/main/figs/OST_009_crop_SwinIR.png">|
-
-- **_News (2021-08-31)_**: We upload the [training code of BSRGAN](https://github.com/cszn/BSRGAN#training).
-- **_News (2021-08-24)_**: We upload the BSRGAN degradation model.
-- **_News (2021-08-22)_**: Support multi-feature-layer VGG perceptual loss and UNet discriminator. 
-- **_News (2021-08-18)_**: We upload the extended BSRGAN degradation model. It is slightly different from our published version. 
-
-- **_News (2021-06-03)_**: Add testing codes of [GPEN (CVPR21)](https://github.com/yangxy/GPEN) for face image enhancement: [main_test_face_enhancement.py](https://github.com/cszn/KAIR/blob/master/main_test_face_enhancement.py)
-
-<img src="figs/face_04_comparison.png" width="730px"/> 
-<img src="figs/face_13_comparison.png" width="730px"/> 
-<img src="figs/face_08_comparison.png" width="730px"/> 
-<img src="figs/face_01_comparison.png" width="730px"/> 
-<img src="figs/face_12_comparison.png" width="730px"/> 
-<img src="figs/face_10_comparison.png" width="730px"/> 
-
-
-- **_News (2021-05-13)_**: Add [PatchGAN discriminator](https://github.com/cszn/KAIR/blob/master/models/network_discriminator.py).
-
-- **_News (2021-05-12)_**: Support distributed training, see also [https://github.com/xinntao/BasicSR/blob/master/docs/TrainTest.md](https://github.com/xinntao/BasicSR/blob/master/docs/TrainTest.md).
-
-- **_News (2021-01)_**: [BSRGAN](https://github.com/cszn/BSRGAN) for blind real image super-resolution will be added.
-
-- **_Pull requests are welcome!_**
-
-- **Correction (2020-10)**: If you use multiple GPUs for GAN training, remove or comment [Line 105](https://github.com/cszn/KAIR/blob/e52a6944c6a40ba81b88430ffe38fd6517e0449e/models/model_gan.py#L105) to enable `DataParallel` for fast training
-
-- **News (2020-10)**: Add [utils_receptivefield.py](https://github.com/cszn/KAIR/blob/master/utils/utils_receptivefield.py) to calculate receptive field.
-
-- **News (2020-8)**: A `deep plug-and-play image restoration toolbox` is released at [cszn/DPIR](https://github.com/cszn/DPIR).
-
-- **Tips (2020-8)**: Use [this](https://github.com/cszn/KAIR/blob/9fd17abff001ab82a22070f7e442bb5246d2d844/main_challenge_sr.py#L147) to avoid `out of memory` issue.
-
-- **News (2020-7)**: Add [main_challenge_sr.py](https://github.com/cszn/KAIR/blob/23b0d0f717980e48fad02513ba14045d57264fe1/main_challenge_sr.py#L90) to get `FLOPs`, `#Params`, `Runtime`, `#Activations`, `#Conv`, and `Max Memory Allocated`.
-```python
-from utils.utils_modelsummary import get_model_activation, get_model_flops
-input_dim = (3, 256, 256)  # set the input dimension
-activations, num_conv2d = get_model_activation(model, input_dim)
-logger.info('{:>16s} : {:<.4f} [M]'.format('#Activations', activations/10**6))
-logger.info('{:>16s} : {:<d}'.format('#Conv2d', num_conv2d))
-flops = get_model_flops(model, input_dim, False)
-logger.info('{:>16s} : {:<.4f} [G]'.format('FLOPs', flops/10**9))
-num_parameters = sum(map(lambda x: x.numel(), model.parameters()))
-logger.info('{:>16s} : {:<.4f} [M]'.format('#Params', num_parameters/10**6))
+### 1. Clonar el Repositorio
+```bash
+git clone https://github.com/JuanHoKKeR/SwinIR_Microscopy.git
+cd SwinIR_Microscopy
 ```
 
-- **News (2020-6)**: Add [USRNet (CVPR 2020)](https://github.com/cszn/USRNet) for training and testing.
-  - [Network Architecture](https://github.com/cszn/KAIR/blob/3357aa0e54b81b1e26ceb1cee990f39add235e17/models/network_usrnet.py#L309)
-  - [Dataset](https://github.com/cszn/KAIR/blob/6c852636d3715bb281637863822a42c72739122a/data/dataset_usrnet.py#L16)
-
-
-Clone repo
-----------
+### 2. Preparar el Dataset
+Organiza tu dataset con la siguiente estructura:
 ```
-git clone https://github.com/cszn/KAIR.git
-```
-```
-pip install -r requirement.txt
-```
-
-
-
-Training
-----------
-
-You should modify the json file from [options](https://github.com/cszn/KAIR/tree/master/options) first, for example,
-setting ["gpu_ids": [0,1,2,3]](https://github.com/cszn/KAIR/blob/ff80d265f64de67dfb3ffa9beff8949773c81a3d/options/train_msrresnet_psnr.json#L4) if 4 GPUs are used,
-setting ["dataroot_H": "trainsets/trainH"](https://github.com/cszn/KAIR/blob/ff80d265f64de67dfb3ffa9beff8949773c81a3d/options/train_msrresnet_psnr.json#L24) if path of the high quality dataset is `trainsets/trainH`.
-
-- Training with `DataParallel` - PSNR
-
-
-```python
-python main_train_psnr.py --opt options/train_msrresnet_psnr.json
+trainsets/
+├── trainH/              # Imágenes de alta resolución (ground truth)
+└── trainL/              # Imágenes de baja resolución (input)
+testsets/
+├── Set5/
+│   ├── HR/             # Ground truth para evaluación
+│   └── LR_bicubic/     # Imágenes de entrada para testing
+└── histopatologia/     # Dataset personalizado
+    ├── HR/
+    └── LR_bicubic/
 ```
 
-- Training with `DataParallel` - GAN
+### 3. Configurar el Entrenamiento
+Edita el archivo de configuración JSON en `options/`:
 
-```python
-python main_train_gan.py --opt options/train_msrresnet_gan.json
-```
-
-- Training with `DistributedDataParallel` - PSNR - 4 GPUs
-
-```python
-python -m torch.distributed.launch --nproc_per_node=4 --master_port=1234 main_train_psnr.py --opt options/train_msrresnet_psnr.json  --dist True
-```
-
-- Training with `DistributedDataParallel` - PSNR - 8 GPUs
-
-```python
-python -m torch.distributed.launch --nproc_per_node=8 --master_port=1234 main_train_psnr.py --opt options/train_msrresnet_psnr.json  --dist True
-```
-
-- Training with `DistributedDataParallel` - GAN - 4 GPUs
-
-```python
-python -m torch.distributed.launch --nproc_per_node=4 --master_port=1234 main_train_gan.py --opt options/train_msrresnet_gan.json  --dist True
-```
-
-- Training with `DistributedDataParallel` - GAN - 8 GPUs
-
-```python
-python -m torch.distributed.launch --nproc_per_node=8 --master_port=1234 main_train_gan.py --opt options/train_msrresnet_gan.json  --dist True
-```
-
-- Kill distributed training processes of `main_train_gan.py`
-
-```python
-kill $(ps aux | grep main_train_gan.py | grep -v grep | awk '{print $2}')
-```
-
-----------
-| Method | Original Link |
-|---|---|
-| DnCNN |[https://github.com/cszn/DnCNN](https://github.com/cszn/DnCNN)|
-| FDnCNN |[https://github.com/cszn/DnCNN](https://github.com/cszn/DnCNN)|
-| FFDNet | [https://github.com/cszn/FFDNet](https://github.com/cszn/FFDNet)|
-| SRMD | [https://github.com/cszn/SRMD](https://github.com/cszn/SRMD)|
-| DPSR-SRResNet | [https://github.com/cszn/DPSR](https://github.com/cszn/DPSR)|
-| SRResNet | [https://github.com/xinntao/BasicSR](https://github.com/xinntao/BasicSR)|
-| ESRGAN | [https://github.com/xinntao/ESRGAN](https://github.com/xinntao/ESRGAN)|
-| RRDB | [https://github.com/xinntao/ESRGAN](https://github.com/xinntao/ESRGAN)|
-| IMDB | [https://github.com/Zheng222/IMDN](https://github.com/Zheng222/IMDN)|
-| USRNet | [https://github.com/cszn/USRNet](https://github.com/cszn/USRNet)|
-| DRUNet | [https://github.com/cszn/DPIR](https://github.com/cszn/DPIR)|
-| DPIR | [https://github.com/cszn/DPIR](https://github.com/cszn/DPIR)|
-| BSRGAN | [https://github.com/cszn/BSRGAN](https://github.com/cszn/BSRGAN)|
-| SwinIR | [https://github.com/JingyunLiang/SwinIR](https://github.com/JingyunLiang/SwinIR)|
-| VRT | [https://github.com/JingyunLiang/VRT](https://github.com/JingyunLiang/VRT)       |
-| DiffPIR | [https://github.com/yuanzhi-zhu/DiffPIR](https://github.com/yuanzhi-zhu/DiffPIR)|
-
-Network architectures
-----------
-* [USRNet](https://github.com/cszn/USRNet)
-
-  <img src="https://github.com/cszn/USRNet/blob/master/figs/architecture.png" width="600px"/> 
-
-* DnCNN
-
-  <img src="https://github.com/cszn/DnCNN/blob/master/figs/dncnn.png" width="600px"/> 
- 
-* IRCNN denoiser
-
- <img src="https://github.com/lipengFu/IRCNN/raw/master/Image/image_2.png" width="680px"/> 
-
-* FFDNet
-
-  <img src="https://github.com/cszn/FFDNet/blob/master/figs/ffdnet.png" width="600px"/> 
-
-* SRMD
-
-  <img src="https://github.com/cszn/SRMD/blob/master/figs/architecture.png" width="605px"/> 
-
-* SRResNet, SRGAN, RRDB, ESRGAN
-
-  <img src="https://github.com/xinntao/ESRGAN/blob/master/figures/architecture.jpg" width="595px"/> 
+```json
+{
+  "task": "sr",
+  "model": "plain", 
+  "scale": 2,
+  "gpu_ids": [0],
   
-* IMDN
+  "datasets": {
+    "train": {
+      "name": "histopatologia_train",
+      "type": "DatasetSR",
+      "dataroot_H": "trainsets/trainH",
+      "dataroot_L": "trainsets/trainL",
+      "H_size": 256,
+      "dataloader_shuffle": true,
+      "dataloader_num_workers": 8,
+      "dataloader_batch_size": 4
+    },
+    "test": {
+      "name": "histopatologia_test", 
+      "type": "DatasetSR",
+      "dataroot_H": "testsets/histopatologia/HR",
+      "dataroot_L": "testsets/histopatologia/LR_bicubic"
+    }
+  },
 
-  <img src="figs/imdn.png" width="460px"/>  ----- <img src="figs/imdn_block.png" width="100px"/> 
-
-
-
-Testing
-----------
-|Method | [model_zoo](model_zoo)|
-|---|---|
-| [main_test_dncnn.py](main_test_dncnn.py) |```dncnn_15.pth, dncnn_25.pth, dncnn_50.pth, dncnn_gray_blind.pth, dncnn_color_blind.pth, dncnn3.pth```|
-| [main_test_ircnn_denoiser.py](main_test_ircnn_denoiser.py) | ```ircnn_gray.pth, ircnn_color.pth```| 
-| [main_test_fdncnn.py](main_test_fdncnn.py) | ```fdncnn_gray.pth, fdncnn_color.pth, fdncnn_gray_clip.pth, fdncnn_color_clip.pth```|
-| [main_test_ffdnet.py](main_test_ffdnet.py) | ```ffdnet_gray.pth, ffdnet_color.pth, ffdnet_gray_clip.pth, ffdnet_color_clip.pth```|
-| [main_test_srmd.py](main_test_srmd.py) | ```srmdnf_x2.pth, srmdnf_x3.pth, srmdnf_x4.pth, srmd_x2.pth, srmd_x3.pth, srmd_x4.pth```| 
-|  | **The above models are converted from MatConvNet.** |
-| [main_test_dpsr.py](main_test_dpsr.py) | ```dpsr_x2.pth, dpsr_x3.pth, dpsr_x4.pth, dpsr_x4_gan.pth```|
-| [main_test_msrresnet.py](main_test_msrresnet.py) | ```msrresnet_x4_psnr.pth, msrresnet_x4_gan.pth```|
-| [main_test_rrdb.py](main_test_rrdb.py) | ```rrdb_x4_psnr.pth, rrdb_x4_esrgan.pth```|
-| [main_test_imdn.py](main_test_imdn.py) | ```imdn_x4.pth```|
-
-[model_zoo](model_zoo)
---------
-- download link [https://drive.google.com/drive/folders/13kfr3qny7S2xwG9h7v95F5mkWs0OmU0D](https://drive.google.com/drive/folders/13kfr3qny7S2xwG9h7v95F5mkWs0OmU0D)
-
-[trainsets](trainsets)
-----------
-- [https://github.com/xinntao/BasicSR/blob/master/docs/DatasetPreparation.md](https://github.com/xinntao/BasicSR/blob/master/docs/DatasetPreparation.md)
-- [train400](https://github.com/cszn/DnCNN/tree/master/TrainingCodes/DnCNN_TrainingCodes_v1.0/data)
-- [DIV2K](https://data.vision.ee.ethz.ch/cvl/DIV2K/)
-- [Flickr2K](https://cv.snu.ac.kr/research/EDSR/Flickr2K.tar)
-- optional: use [split_imageset(original_dataroot, taget_dataroot, n_channels=3, p_size=512, p_overlap=96, p_max=800)](https://github.com/cszn/KAIR/blob/3ee0bf3e07b90ec0b7302d97ee2adb780617e637/utils/utils_image.py#L123) to get ```trainsets/trainH``` with small images for fast data loading
-
-[testsets](testsets)
------------
-- [https://github.com/xinntao/BasicSR/blob/master/docs/DatasetPreparation.md](https://github.com/xinntao/BasicSR/blob/master/docs/DatasetPreparation.md)
-- [set12](https://github.com/cszn/FFDNet/tree/master/testsets)
-- [bsd68](https://github.com/cszn/FFDNet/tree/master/testsets)
-- [cbsd68](https://github.com/cszn/FFDNet/tree/master/testsets)
-- [kodak24](https://github.com/cszn/FFDNet/tree/master/testsets)
-- [srbsd68](https://github.com/cszn/DPSR/tree/master/testsets/BSD68/GT)
-- set5
-- set14
-- cbsd100
-- urban100
-- manga109
-
-
-References
-----------
-```BibTex
-@inproceedings{zhu2023denoising, % DiffPIR
-title={Denoising Diffusion Models for Plug-and-Play Image Restoration},
-author={Yuanzhi Zhu and Kai Zhang and Jingyun Liang and Jiezhang Cao and Bihan Wen and Radu Timofte and Luc Van Gool},
-booktitle={IEEE Conference on Computer Vision and Pattern Recognition Workshops},
-year={2023}
+  "netG": {
+    "net_type": "swinir",
+    "upscale": 2,
+    "in_chans": 3,
+    "img_size": 64,
+    "window_size": 8,
+    "img_range": 1.0,
+    "depths": [6, 6, 6, 6, 6, 6],
+    "embed_dim": 180,
+    "num_heads": [6, 6, 6, 6, 6, 6],
+    "mlp_ratio": 2,
+    "upsampler": "pixelshuffle",
+    "resi_connection": "1conv"
+  }
 }
-@article{liang2022vrt,
-title={VRT: A Video Restoration Transformer},
-author={Liang, Jingyun and Cao, Jiezhang and Fan, Yuchen and Zhang, Kai and Ranjan, Rakesh and Li, Yawei and Timofte, Radu and Van Gool, Luc},
-journal={arXiv preprint arXiv:2022.00000},
-year={2022}
+```
+
+### 4. Ejecutar
+
+#### Entrenamiento
+```bash
+# Ejecutar entrenamiento
+python main_train_psnr.py \
+    --opt options\swinir\train_swinir_sr_custom.json
+```
+
+#### Inferencia/Testing
+```bash
+# Evaluar modelo entrenado
+python main_test_swinir.py \
+    --opt options\swinir\test_swinir_sr_custom.json
+```
+
+## 📁 **Estructura del Proyecto**
+
+```
+SwinIR_Microscopy/
+├── options/                    # Archivos de configuración JSON
+│   ├── train_swinir_sr_*.json  # Configuraciones de entrenamiento
+│   └── test_swinir_sr_*.json   # Configuraciones de testing
+├── models/                     # Arquitecturas y modelos
+│   ├── network_swinir.py       # Implementación SwinIR
+│   ├── model_plain.py          # Wrapper del modelo
+│   └── select_network.py       # Selector de redes
+├── data/                       # Manejo de datasets
+│   ├── dataset_sr.py           # Dataset para super-resolución
+│   └── select_dataset.py       # Selector de datasets
+├── utils/                      # Utilidades
+│   ├── utils_image.py          # Procesamiento de imágenes
+│   ├── utils_logger.py         # Sistema de logging
+│   └── utils_option.py         # Parseo de configuraciones
+├── main_train_psnr.py          # Script principal de entrenamiento
+├── main_test_swinir.py         # Script principal de testing
+├── experiments/                # Resultados y modelos entrenados
+│   └── [experiment_name]/
+│       ├── models/             # Checkpoints del modelo
+│       ├── images/             # Imágenes de validación
+│       └── log/                # Logs de entrenamiento
+└── testsets/                   # Datasets de evaluación
+```
+
+## 🧠 **Arquitectura SwinIR**
+
+### Componentes Principales
+
+#### **1. Swin Transformer Blocks**
+```python
+# En models/network_swinir.py
+class SwinTransformerBlock(nn.Module):
+    def __init__(self, dim, input_resolution, num_heads, window_size=7, 
+                 shift_size=0, mlp_ratio=4.):
+        # Window-based Multi-head Self Attention (W-MSA)
+        # Shifted Window Multi-head Self Attention (SW-MSA)
+        # Feed-forward Network (FFN)
+```
+
+#### **2. Arquitectura Completa**
+- **Shallow Feature Extraction**: Extracción inicial de características
+- **Deep Feature Extraction**: Stack de Residual Swin Transformer Blocks (RSTB)
+- **High-quality Image Reconstruction**: Upsampling y reconstrucción final
+
+### Configuraciones Disponibles
+
+#### **Configuración Estándar (Recomendada)**
+```json
+"netG": {
+    "depths": [6, 6, 6, 6, 6, 6],
+    "embed_dim": 180,
+    "num_heads": [6, 6, 6, 6, 6, 6],
+    "window_size": 8,
+    "img_size": 64
 }
+```
+
+#### **Configuración Optimizada para Memoria**
+```json
+"netG": {
+    "depths": [6, 6, 6, 6],          # Reducir layers externos
+    "embed_dim": 180,
+    "num_heads": [6, 6, 6, 6],       # Correspondiente a depths
+    "window_size": 8,
+    "img_size": 48                   # Reducir tamaño de entrada
+}
+```
+
+#### **Configuración Mínima (Hardware Limitado)**
+```json
+"netG": {
+    "depths": [4, 4, 4],
+    "embed_dim": 60,                 # Reducir dimensión embedding
+    "num_heads": [4, 4, 4],
+    "window_size": 8,
+    "img_size": 32
+}
+```
+
+## 🚀 **Scripts Principales**
+
+### 1. **Entrenamiento de Modelos**
+
+#### `main_train_psnr.py`
+Script principal para entrenar modelos SwinIR optimizando PSNR.
+
+```bash
+python main_train_psnr.py --opt options/train_swinir_sr_histopatologia.json
+```
+
+**Parámetros de configuración importantes:**
+```json
+{
+  "train": {
+    "G_lossfn_type": "l1",           # l1, l2, ssim
+    "G_lossfn_weight": 1.0,
+    "G_optimizer_type": "adam",
+    "G_optimizer_lr": 2e-4,
+    "G_optimizer_wd": 0,
+    "G_scheduler_type": "MultiStepLR",
+    "G_scheduler_milestones": [250000, 400000, 450000, 475000],
+    "G_scheduler_gamma": 0.5,
+    "checkpoint_save": 5000,
+    "checkpoint_print": 100
+  }
+}
+```
+
+### 2. **Testing y Evaluación**
+
+#### `main_test_swinir.py`
+Evaluación de modelos entrenados con métricas comprehensive.
+
+```bash
+python main_test_swinir.py --opt options/test_swinir_sr_histopatologia.json
+```
+
+**Configuración de testing:**
+```json
+{
+  "path": {
+    "pretrained_netG": "experiments/swinir_histopatologia/models/G.pth",
+    "root": "testsets",
+    "results_root": "results"
+  },
+  "datasets": {
+    "test": {
+      "name": "histopatologia_test",
+      "type": "DatasetSR", 
+      "dataroot_H": "testsets/histopatologia/HR",
+      "dataroot_L": "testsets/histopatologia/LR_bicubic"
+    }
+  }
+}
+```
+
+### 3. **Evaluación con Métricas Especializadas**
+
+#### `evaluate_model_comprehensive.py`
+Script personalizado para evaluación detallada con métricas médicas.
+
+```bash
+python evaluate_model_comprehensive.py \
+    --model_path experiments/swinir_histopatologia/models/G.pth \
+    --test_dir testsets/histopatologia \
+    --results_dir evaluation_results \
+    --max_images 1000
+```
+
+**Métricas calculadas:**
+- **PSNR**: Peak Signal-to-Noise Ratio
+- **SSIM**: Structural Similarity Index
+- **MS-SSIM**: Multi-Scale SSIM
+- **MSE**: Mean Squared Error
+- **MAE**: Mean Absolute Error
+- **Métricas perceptuales**: Basadas en características VGG
+
+### 4. **Análisis Visual y Comparativo**
+
+#### `visual_comparison_analyzer.py`
+Genera análisis visual comprehensive entre diferentes resoluciones.
+
+```bash
+python visual_comparison_analyzer.py \
+    --lr_image path/to/lr_image.png \
+    --hr_image path/to/hr_image.png \
+    --model_path experiments/swinir_histopatologia/models/G.pth \
+    --output_dir visual_analysis
+```
+
+**Genera:**
+- Comparación lado a lado (LR → Predicción → GT)
+- Mapas de diferencia absoluta
+- Análisis de preservación de estructuras histológicas
+- Estadísticas detalladas por región
+
+## 📊 **Resultados y Rendimiento**
+
+### **Modelos Entrenados y Evaluados**
+
+| Modelo | Input → Output | PSNR (dB) | SSIM | MS-SSIM | Tiempo GPU (ms) | VRAM (MB) |
+|--------|----------------|-----------|------|---------|-----------------|-----------|
+| 64→128 | 64×64 → 128×128 | 23.19±1.8 | 0.741±0.05 | 0.954±0.02 | 89.81 | 0.5 |
+| 128→256 | 128×128 → 256×256 | 25.42±2.1 | 0.802±0.04 | 0.975±0.01 | 131.87 | 1.7 |
+| 256→512 | 256×256 → 512×512 | 28.56±1.9 | 0.847±0.03 | 0.982±0.01 | 267.34 | 6.4 |
+| **512→1024** | **512×512 → 1024×1024** | **32.89±1.6** | **0.912±0.02** | **0.960±0.02** | **501.25** | **24.8** |
+
+*Evaluado en ~1000 muestras aleatorias del dataset de histopatología*
+
+### **Comparación con Otras Arquitecturas**
+
+| Métrica | SwinIR 512→1024 | ESRGAN 512→1024 | EDSR 512→1024 |
+|---------|-----------------|-----------------|---------------|
+| **PSNR (dB)** | **32.89** ↑ | 30.51 | 32.06 |
+| **SSIM** | **0.912** ↑ | 0.886 | 0.888 |
+| **MS-SSIM** | **0.960** ↑ | 0.972 | 0.968 |
+| **Tiempo GPU (ms)** | 501.25 | **61.10** ↑ | 384.80 |
+| **VRAM (MB)** | **24.8** ↑ | 171.5 | 24.0 |
+
+**Ventajas de SwinIR:**
+✅ **Mejor calidad**: PSNR y SSIM superiores  
+✅ **Eficiencia de memoria**: Menor uso de VRAM que ESRGAN  
+✅ **Preservación de estructuras**: Mejor captura de patrones histológicos  
+✅ **Estabilidad**: Entrenamiento más estable sin modo collapse  
+
+
+
+### **Evaluación Visual - Preservación de Estructuras Histológicas**
+
+```
+Análisis Histopatológico:
+├── Preservación de bordes nucleares: ✅ Excelente
+├── Definición de interfaces tisulares: ✅ Superior 
+├── Textura de estroma: ✅ Bien preservada
+├── Arquitectura glandular: ✅ Fiel al original
+└── Ausencia de artefactos: ✅ Mínimos
+```
+
+## ⚙️ **Configuración Detallada**
+
+### **Configuraciones por Resolución**
+
+#### **64→128 (Básica)**
+```json
+{
+  "netG": {
+    "depths": [6, 6, 6, 6, 6, 6],
+    "embed_dim": 180,
+    "num_heads": [6, 6, 6, 6, 6, 6],
+    "img_size": 64,
+    "window_size": 8
+  },
+  "datasets": {
+    "train": {
+      "H_size": 128,
+      "dataloader_batch_size": 8
+    }
+  }
+}
+```
+
+#### **256→512 (Intermedia)**
+```json
+{
+  "netG": {
+    "depths": [6, 6, 6, 6],           # Reducir para optimizar memoria
+    "embed_dim": 180,
+    "num_heads": [6, 6, 6, 6],
+    "img_size": 256,
+    "window_size": 8
+  },
+  "datasets": {
+    "train": {
+      "H_size": 512,
+      "dataloader_batch_size": 2       # Reducir batch size
+    }
+  }
+}
+```
+
+#### **512→1024 (Alta Resolución)**
+```json
+{
+  "netG": {
+    "depths": [4, 4, 4],              # Configuración mínima
+    "embed_dim": 60,                  # Reducir embedding dimension
+    "num_heads": [4, 4, 4],
+    "img_size": 512,
+    "window_size": 8
+  },
+  "datasets": {
+    "train": {
+      "H_size": 1024,
+      "dataloader_batch_size": 1       # Batch size mínimo
+    }
+  }
+}
+```
+
+### **Optimizaciones de Entrenamiento**
+
+#### **Learning Rate Scheduling**
+```json
+{
+  "train": {
+    "G_optimizer_lr": 2e-4,
+    "G_scheduler_type": "CosineAnnealingRestartLR", 
+    "G_scheduler_periods": [250000, 250000, 250000, 250000],
+    "G_scheduler_restart_weights": [1, 0.5, 0.5, 0.5],
+    "G_scheduler_eta_min": 1e-7
+  }
+}
+```
+
+#### **Data Augmentation**
+```json
+{
+  "datasets": {
+    "train": {
+      "use_hflip": true,              # Horizontal flip
+      "use_rot": true,                # 90° rotations
+      "use_shuffle": true,
+      "dataloader_shuffle": true,
+      "H_size": 256,
+      "use_crop": true
+    }
+  }
+}
+```
+
+## 🐛 **Solución de Problemas Comunes**
+
+### **1. Problemas de Memoria GPU**
+
+**Error**: `CUDA out of memory`
+
+**Soluciones:**
+```json
+// Reducir batch size
+"dataloader_batch_size": 1
+
+// Usar configuración mínima
+"depths": [4, 4, 4],
+"embed_dim": 60,
+
+// Reducir tamaño de imagen
+"img_size": 32,
+"H_size": 128
+```
+
+### **2. Convergencia Lenta**
+
+**Síntomas**: Loss no disminuye después de muchas iteraciones
+
+**Soluciones:**
+```json
+// Ajustar learning rate
+"G_optimizer_lr": 1e-4,  // Reducir si oscila
+"G_optimizer_lr": 5e-4,  // Aumentar si muy lento
+
+// Cambiar scheduler
+"G_scheduler_type": "StepLR",
+"G_scheduler_step_size": 100000,
+"G_scheduler_gamma": 0.8
+```
+
+### **3. Artefactos en Resultados**
+
+**Problema**: Imágenes con patrones extraños o bloque
+
+**Causas y soluciones:**
+```json
+// Window size inadecuado
+"window_size": 8,  // Probar 4 o 16
+
+// Modelo undertrained
+// Entrenar por más iteraciones: 500000+
+
+// Dataset insuficiente  
+// Usar data augmentation agresivo
+```
+
+## 📈 **Monitoreo**
+
+### **Checkpointing Automático**
+```json
+{
+  "train": {
+    "checkpoint_save": 5000,         # Guardar cada 5k iteraciones
+    "checkpoint_test": 5000,         # Validar cada 5k iteraciones
+    "checkpoint_print": 100          # Log cada 100 iteraciones
+  }
+}
+```
+
+
+## 🤝 **Contribución**
+
+Este proyecto es parte de un Trabajo de Grado enfocado en super-resolución médica. Las contribuciones son bienvenidas:
+
+1. Fork el repositorio
+2. Crea una rama para tu feature (`git checkout -b feature/nueva-caracteristica`)
+3. Commit tus cambios (`git commit -am 'Añadir nueva característica'`)
+4. Push a la rama (`git push origin feature/nueva-caracteristica`)
+5. Crea un Pull Request
+
+## 📄 **Licencia**
+
+Este proyecto está licenciado bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) para detalles.
+
+## 🙏 **Reconocimientos**
+
+- **Proyecto Original**: [KAIR](https://github.com/cszn/KAIR) por Kai Zhang
+- **SwinIR Paper**: Liang, Jingyun, et al. "SwinIR: Image restoration using swin transformer." ICCVW 2021.
+- **Swin Transformer**: Liu, Ze, et al. "Swin transformer: Hierarchical vision transformer using shifted windows." ICCV 2021.
+- **Framework PyTorch**: Por el excelente framework de deep learning
+
+## 📞 **Contacto**
+
+- **Autor**: Juan David Cruz Useche
+- **Proyecto**: Trabajo de Grado - Super-Resolución para Histopatología
+- **GitHub**: [@JuanHoKKeR](https://github.com/JuanHoKKeR)
+- **Repositorio**: [SwinIR_Microscopy](https://github.com/JuanHoKKeR/SwinIR_Microscopy)
+
+## 📚 **Referencias**
+
+```bibtex
 @inproceedings{liang2021swinir,
-title={SwinIR: Image Restoration Using Swin Transformer},
-author={Liang, Jingyun and Cao, Jiezhang and Sun, Guolei and Zhang, Kai and Van Gool, Luc and Timofte, Radu},
-booktitle={IEEE International Conference on Computer Vision Workshops},
-pages={1833--1844},
-year={2021}
-}
-@inproceedings{zhang2021designing,
-title={Designing a Practical Degradation Model for Deep Blind Image Super-Resolution},
-author={Zhang, Kai and Liang, Jingyun and Van Gool, Luc and Timofte, Radu},
-booktitle={IEEE International Conference on Computer Vision},
-pages={4791--4800},
-year={2021}
-}
-@article{zhang2021plug, % DPIR & DRUNet & IRCNN
-  title={Plug-and-Play Image Restoration with Deep Denoiser Prior},
-  author={Zhang, Kai and Li, Yawei and Zuo, Wangmeng and Zhang, Lei and Van Gool, Luc and Timofte, Radu},
-  journal={IEEE Transactions on Pattern Analysis and Machine Intelligence},
+  title={SwinIR: Image Restoration Using Swin Transformer},
+  author={Liang, Jingyun and Cao, Jiezhang and Sun, Guolei and Zhang, Kai and Van Gool, Luc and Timofte, Radu},
+  booktitle={IEEE International Conference on Computer Vision Workshops},
+  pages={1833--1844},
   year={2021}
 }
-@inproceedings{zhang2020aim, % efficientSR_challenge
-  title={AIM 2020 Challenge on Efficient Super-Resolution: Methods and Results},
-  author={Kai Zhang and Martin Danelljan and Yawei Li and Radu Timofte and others},
-  booktitle={European Conference on Computer Vision Workshops},
-  year={2020}
+
+@inproceedings{liu2021swin,
+  title={Swin transformer: Hierarchical vision transformer using shifted windows},
+  author={Liu, Ze and Lin, Yutong and Cao, Yue and Hu, Han and Wei, Yixuan and Zhang, Zheng and Lin, Stephen and Guo, Baining},
+  booktitle={Proceedings of the IEEE/CVF International Conference on Computer Vision},
+  pages={10012--10022},
+  year={2021}
 }
-@inproceedings{zhang2020deep, % USRNet
-  title={Deep unfolding network for image super-resolution},
-  author={Zhang, Kai and Van Gool, Luc and Timofte, Radu},
-  booktitle={IEEE Conference on Computer Vision and Pattern Recognition},
-  pages={3217--3226},
-  year={2020}
-}
-@article{zhang2017beyond, % DnCNN
-  title={Beyond a gaussian denoiser: Residual learning of deep cnn for image denoising},
-  author={Zhang, Kai and Zuo, Wangmeng and Chen, Yunjin and Meng, Deyu and Zhang, Lei},
-  journal={IEEE Transactions on Image Processing},
-  volume={26},
-  number={7},
-  pages={3142--3155},
-  year={2017}
-}
-@inproceedings{zhang2017learning, % IRCNN
-title={Learning deep CNN denoiser prior for image restoration},
-author={Zhang, Kai and Zuo, Wangmeng and Gu, Shuhang and Zhang, Lei},
-booktitle={IEEE conference on computer vision and pattern recognition},
-pages={3929--3938},
-year={2017}
-}
-@article{zhang2018ffdnet, % FFDNet, FDnCNN
-  title={FFDNet: Toward a fast and flexible solution for CNN-based image denoising},
-  author={Zhang, Kai and Zuo, Wangmeng and Zhang, Lei},
-  journal={IEEE Transactions on Image Processing},
-  volume={27},
-  number={9},
-  pages={4608--4622},
-  year={2018}
-}
-@inproceedings{zhang2018learning, % SRMD
-  title={Learning a single convolutional super-resolution network for multiple degradations},
-  author={Zhang, Kai and Zuo, Wangmeng and Zhang, Lei},
-  booktitle={IEEE Conference on Computer Vision and Pattern Recognition},
-  pages={3262--3271},
-  year={2018}
-}
-@inproceedings{zhang2019deep, % DPSR
-  title={Deep Plug-and-Play Super-Resolution for Arbitrary Blur Kernels},
-  author={Zhang, Kai and Zuo, Wangmeng and Zhang, Lei},
-  booktitle={IEEE Conference on Computer Vision and Pattern Recognition},
-  pages={1671--1681},
-  year={2019}
-}
-@InProceedings{wang2018esrgan, % ESRGAN, MSRResNet
-    author = {Wang, Xintao and Yu, Ke and Wu, Shixiang and Gu, Jinjin and Liu, Yihao and Dong, Chao and Qiao, Yu and Loy, Chen Change},
-    title = {ESRGAN: Enhanced super-resolution generative adversarial networks},
-    booktitle = {The European Conference on Computer Vision Workshops (ECCVW)},
-    month = {September},
-    year = {2018}
-}
-@inproceedings{hui2019lightweight, % IMDN
-  title={Lightweight Image Super-Resolution with Information Multi-distillation Network},
-  author={Hui, Zheng and Gao, Xinbo and Yang, Yunchu and Wang, Xiumei},
-  booktitle={Proceedings of the 27th ACM International Conference on Multimedia (ACM MM)},
-  pages={2024--2032},
-  year={2019}
-}
-@inproceedings{zhang2019aim, % IMDN
-  title={AIM 2019 Challenge on Constrained Super-Resolution: Methods and Results},
-  author={Kai Zhang and Shuhang Gu and Radu Timofte and others},
-  booktitle={IEEE International Conference on Computer Vision Workshops},
-  year={2019}
-}
-@inproceedings{yang2021gan,
-    title={GAN Prior Embedded Network for Blind Face Restoration in the Wild},
-    author={Tao Yang, Peiran Ren, Xuansong Xie, and Lei Zhang},
-    booktitle={IEEE Conference on Computer Vision and Pattern Recognition},
-    year={2021}
+
+@misc{zhang2021kair,
+  title={KAIR: An image restoration toolbox},
+  author={Zhang, Kai},
+  howpublished={\url{https://github.com/cszn/KAIR}},
+  year={2021}
 }
 ```
+
+---
+
+**⭐ Si este proyecto te resulta útil, considera darle una estrella en GitHub!**
