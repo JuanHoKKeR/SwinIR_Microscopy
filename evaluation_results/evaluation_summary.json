@@ -1,0 +1,112 @@
+{
+  "start_time": "2025-07-24T23:44:13.097488",
+  "models_evaluated": [
+    {
+      "model_name": "64to128",
+      "start_time": "2025-07-24T23:44:13.098011",
+      "steps": [
+        {
+          "step": "metrics_evaluation",
+          "success": true,
+          "duration": 884.1069555282593,
+          "output": "/media/adalab/Bodega/JuanCruz/SwinIR/swinir_venv/lib/python3.12/site-packages/timm/models/layers/__init__.py:48: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers\n  warnings.warn(f\"Importing from {__name__} is deprecated, please import via timm.layers\", FutureWarning)\n2025-07-24 23:44:19.061704: I tensorflow/core/util/port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors fr"
+        },
+        {
+          "step": "timing_gpu",
+          "success": true,
+          "duration": 14.628929615020752,
+          "output": "/media/adalab/Bodega/JuanCruz/SwinIR/swinir_venv/lib/python3.12/site-packages/timm/models/layers/__init__.py:48: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers\n  warnings.warn(f\"Importing from {__name__} is deprecated, please import via timm.layers\", FutureWarning)\n\u26a1 BENCHMARK REALISTA DE TIEMPO DE INFERENCIA SWINIR\n============================================================\nModelo: SwinIR_64to128_GPU\nRuta: superresolution/SwinIR_SR_64to128_v0/6650"
+        },
+        {
+          "step": "timing_cpu",
+          "success": true,
+          "duration": 88.47676849365234,
+          "output": "/media/adalab/Bodega/JuanCruz/SwinIR/swinir_venv/lib/python3.12/site-packages/timm/models/layers/__init__.py:48: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers\n  warnings.warn(f\"Importing from {__name__} is deprecated, please import via timm.layers\", FutureWarning)\n\u26a1 BENCHMARK REALISTA DE TIEMPO DE INFERENCIA SWINIR\n============================================================\nModelo: SwinIR_64to128_CPU\nRuta: superresolution/SwinIR_SR_64to128_v0/6650"
+        }
+      ],
+      "total_duration": 987.2165448665619,
+      "end_time": "2025-07-25T00:00:40.314592"
+    },
+    {
+      "model_name": "128to256",
+      "start_time": "2025-07-25T00:00:40.315833",
+      "steps": [
+        {
+          "step": "metrics_evaluation",
+          "success": true,
+          "duration": 1184.8993940353394,
+          "output": "/media/adalab/Bodega/JuanCruz/SwinIR/swinir_venv/lib/python3.12/site-packages/timm/models/layers/__init__.py:48: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers\n  warnings.warn(f\"Importing from {__name__} is deprecated, please import via timm.layers\", FutureWarning)\n2025-07-25 00:00:46.405232: I tensorflow/core/util/port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors fr"
+        },
+        {
+          "step": "timing_gpu",
+          "success": true,
+          "duration": 16.08050227165222,
+          "output": "/media/adalab/Bodega/JuanCruz/SwinIR/swinir_venv/lib/python3.12/site-packages/timm/models/layers/__init__.py:48: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers\n  warnings.warn(f\"Importing from {__name__} is deprecated, please import via timm.layers\", FutureWarning)\n\u26a1 BENCHMARK REALISTA DE TIEMPO DE INFERENCIA SWINIR\n============================================================\nModelo: SwinIR_128to256_GPU\nRuta: superresolution/SwinIR_SR_128to256/61500"
+        },
+        {
+          "step": "timing_cpu",
+          "success": true,
+          "duration": 254.56383347511292,
+          "output": "/media/adalab/Bodega/JuanCruz/SwinIR/swinir_venv/lib/python3.12/site-packages/timm/models/layers/__init__.py:48: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers\n  warnings.warn(f\"Importing from {__name__} is deprecated, please import via timm.layers\", FutureWarning)\n\u26a1 BENCHMARK REALISTA DE TIEMPO DE INFERENCIA SWINIR\n============================================================\nModelo: SwinIR_128to256_CPU\nRuta: superresolution/SwinIR_SR_128to256/61500"
+        }
+      ],
+      "total_duration": 1455.5484676361084,
+      "end_time": "2025-07-25T00:24:55.864303"
+    },
+    {
+      "model_name": "256to512",
+      "start_time": "2025-07-25T00:24:55.865403",
+      "steps": [
+        {
+          "step": "metrics_evaluation",
+          "success": true,
+          "duration": 1600.0898873806,
+          "output": "/media/adalab/Bodega/JuanCruz/SwinIR/swinir_venv/lib/python3.12/site-packages/timm/models/layers/__init__.py:48: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers\n  warnings.warn(f\"Importing from {__name__} is deprecated, please import via timm.layers\", FutureWarning)\n2025-07-25 00:25:00.843678: I tensorflow/core/util/port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors fr"
+        },
+        {
+          "step": "timing_gpu",
+          "success": true,
+          "duration": 24.359996557235718,
+          "output": "/media/adalab/Bodega/JuanCruz/SwinIR/swinir_venv/lib/python3.12/site-packages/timm/models/layers/__init__.py:48: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers\n  warnings.warn(f\"Importing from {__name__} is deprecated, please import via timm.layers\", FutureWarning)\n\u26a1 BENCHMARK REALISTA DE TIEMPO DE INFERENCIA SWINIR\n============================================================\nModelo: SwinIR_256to512_GPU\nRuta: superresolution/SwinIR_SR_256to512/70000"
+        },
+        {
+          "step": "timing_cpu",
+          "success": true,
+          "duration": 826.2600367069244,
+          "output": "/media/adalab/Bodega/JuanCruz/SwinIR/swinir_venv/lib/python3.12/site-packages/timm/models/layers/__init__.py:48: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers\n  warnings.warn(f\"Importing from {__name__} is deprecated, please import via timm.layers\", FutureWarning)\n\u26a1 BENCHMARK REALISTA DE TIEMPO DE INFERENCIA SWINIR\n============================================================\nModelo: SwinIR_256to512_CPU\nRuta: superresolution/SwinIR_SR_256to512/70000"
+        }
+      ],
+      "total_duration": 2450.7148616313934,
+      "end_time": "2025-07-25T01:05:46.580267"
+    },
+    {
+      "model_name": "512to1024",
+      "start_time": "2025-07-25T01:05:46.581292",
+      "steps": [
+        {
+          "step": "metrics_evaluation",
+          "success": true,
+          "duration": 183.89519810676575,
+          "output": "/media/adalab/Bodega/JuanCruz/SwinIR/swinir_venv/lib/python3.12/site-packages/timm/models/layers/__init__.py:48: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers\n  warnings.warn(f\"Importing from {__name__} is deprecated, please import via timm.layers\", FutureWarning)\n2025-07-25 01:05:51.644231: I tensorflow/core/util/port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors fr"
+        },
+        {
+          "step": "timing_gpu",
+          "success": true,
+          "duration": 37.940542221069336,
+          "output": "/media/adalab/Bodega/JuanCruz/SwinIR/swinir_venv/lib/python3.12/site-packages/timm/models/layers/__init__.py:48: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers\n  warnings.warn(f\"Importing from {__name__} is deprecated, please import via timm.layers\", FutureWarning)\n\u26a1 BENCHMARK REALISTA DE TIEMPO DE INFERENCIA SWINIR\n============================================================\nModelo: SwinIR_512to1024_GPU\nRuta: superresolution/SwinIR_SR_512to1024/500"
+        },
+        {
+          "step": "timing_cpu",
+          "success": true,
+          "duration": 585.3700044155121,
+          "output": "/media/adalab/Bodega/JuanCruz/SwinIR/swinir_venv/lib/python3.12/site-packages/timm/models/layers/__init__.py:48: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers\n  warnings.warn(f\"Importing from {__name__} is deprecated, please import via timm.layers\", FutureWarning)\n\u26a1 BENCHMARK REALISTA DE TIEMPO DE INFERENCIA SWINIR\n============================================================\nModelo: SwinIR_512to1024_CPU\nRuta: superresolution/SwinIR_SR_512to1024/500"
+        }
+      ],
+      "total_duration": 807.2116839885712,
+      "end_time": "2025-07-25T01:19:13.792978"
+    }
+  ],
+  "total_duration": 5700.695896148682,
+  "errors": [],
+  "end_time": "2025-07-25T01:19:13.793510"
+}

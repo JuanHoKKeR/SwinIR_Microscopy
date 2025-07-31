@@ -1,0 +1,22 @@
+RESUMEN DE TIMING REALISTA SWINIR - CPU
+==================================================
+
+INFORMACIÓN DEL SISTEMA:
+Dispositivo: CPU
+Platform: Linux-6.11.0-26-generic-x86_64-with-glibc2.39
+CPU: x86_64
+Cores: 16
+RAM: 31.05 GB
+GPU: No disponible
+PyTorch: 2.7.0+cu126
+
+ESTADÍSTICAS DE TIMING CON IMÁGENES REALES:
+
+SwinIR_128to256_CPU:
+  Tiempo promedio: 4467.52 ms
+  FPS promedio: 0.22
+  Memoria RAM promedio: 38.4 MB
+  Imágenes reales usadas: 100
+  Tamaño imagen: 136x136
+  Escala: 2x
+  Training patch size: 128

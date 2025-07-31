@@ -1,0 +1,25 @@
+RESUMEN DE TIMING REALISTA SWINIR - GPU
+==================================================
+
+INFORMACIÓN DEL SISTEMA:
+Dispositivo: GPU
+Platform: Linux-6.11.0-26-generic-x86_64-with-glibc2.39
+CPU: x86_64
+Cores: 16
+RAM: 31.05 GB
+GPU: Disponible (1 unidades)
+     GPU_0: NVIDIA GeForce RTX 4090 (23.6GB)
+PyTorch: 2.7.0+cu126
+CUDA: 12.6
+
+ESTADÍSTICAS DE TIMING CON IMÁGENES REALES:
+
+SwinIR_64to128_GPU:
+  Tiempo promedio: 89.81 ms
+  FPS promedio: 11.13
+  Memoria RAM promedio: 0.0 MB
+  Memoria GPU promedio: 0.5 MB
+  Imágenes reales usadas: 100
+  Tamaño imagen: 72x72
+  Escala: 2x
+  Training patch size: 64

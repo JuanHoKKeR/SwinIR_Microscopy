@@ -1,0 +1,19 @@
+{
+    "generated_path": "evaluation_results/Evaluacion_Parches/TCGA-BR-4184-01A-01-TS1.133dc934-87bb-45f5-b3d3-ed053e666941_40x_1024px_x15360_y0_Patch14_patch_reconstruc - Copy.jpg",
+    "ground_truth_path": "Imagenes_Microscopia/2048px/TCGA-BR-4184-01A-01-TS1.133dc934-87bb-45f5-b3d3-ed053e666941_40x_2048px_x15360_y0_Patch14.jpg",
+    "generated_shape": [
+        2048,
+        2048,
+        3
+    ],
+    "ground_truth_shape": [
+        2048,
+        2048,
+        3
+    ],
+    "psnr": 38.50277328491211,
+    "ssim": 0.9744367599487305,
+    "ms_ssim": 0.9923149943351746,
+    "mse": 0.00014116353122517467,
+    "perceptual_index": null
+}
