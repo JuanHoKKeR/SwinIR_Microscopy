@@ -15,7 +15,6 @@ dejpeg/
 
 results/*
 wandb/*
-evaluation_results/*
 
 model-kimianet/KimiaNetKerasWeights.h5
 
@@ -60,3 +59,8 @@ ENV/
 # Sistema operativo
 .DS_Store
 Thumbs.db
+.claude
+Imagenes_Microscopia
+swinir-venv
+Scripts_Proyecto_ESRGAN
+optimized_models
